@@ -221,19 +221,19 @@ jobs:
 
       - name: Build APKs
         run: |
-              ./gradlew :app:assemble${{ env.BUILD_VARIANT }} :wear:assemble${{ env.BUILD_VARIANT }} \
-              -Dorg.gradle.jvmargs="-Xmx8g -XX:+UseParallelGC -Xss1024m" \
-              -Dkotlin.daemon.jvm.options="-Xmx2g" \
-              -Dkotlin.compiler.execution.strategy="in-process" \
-              -Dorg.gradle.daemon=true \
-              -Dorg.gradle.workers.max=8 \
-              -Dorg.gradle.caching=true \
-              -Pandroid.injected.signing.store.file="$RUNNER_TEMP/keystore/keystore.jks" \
-              -Pandroid.injected.signing.store.password="$KEYSTORE_PASSWORD" \
-              -Pandroid.injected.signing.key.alias="$KEY_ALIAS" \
-              -Pandroid.injected.signing.key.password="$KEY_PASSWORD"
+          ./gradlew :app:assemble\({{ env.BUILD_VARIANT }} :wear:assemble\){{ env.BUILD_VARIANT }} \
+            -Dorg.gradle.jvmargs="-Xmx8g -XX:+UseParallelGC -Xss1024m" \
+            -Dkotlin.daemon.jvm.options="-Xmx2g" \
+            -Dkotlin.compiler.execution.strategy="in-process" \
+            -Dorg.gradle.daemon=true \
+            -Dorg.gradle.workers.max=8 \
+            -Dorg.gradle.caching=true \
+            -Pandroid.injected.signing.store.file="$RUNNER_TEMP/keystore/keystore.jks" \
+            -Pandroid.injected.signing.store.password="$KEYSTORE_PASSWORD" \
+            -Pandroid.injected.signing.key.alias="$KEY_ALIAS" \
+            -Pandroid.injected.signing.key.password="$KEY_PASSWORD"
 
-        - name: Rename APKs with version
+      - name: Rename APKs with version
         run: |
           mv app/build/outputs/apk/\({{ env.VARIANT_FLAVOR }}/\){{ env.VARIANT_TYPE }}/*.apk aaps-\({{ env.VERSION }}\){{ env.VERSION_SUFFIX }}.apk
           mv wear/build/outputs/apk/\({{ env.VARIANT_FLAVOR }}/\){{ env.VARIANT_TYPE }}/*.apk aaps-wear-\({{ env.VERSION }}\){{ env.VERSION_SUFFIX }}.apk
@@ -243,16 +243,4 @@ jobs:
         with:
           name: AAPS-APKs
           path: '*.apk'
-
-  # Configuration: Threshold-based cleanup
-  cleanup:
-    name: Cleanup Old Workflow Runs
-    needs: build
-    if: always()
-    permissions:
-      actions: write
-    uses: ./.github/workflows/cleanup-workflow-runs.yml
-    with:
-      workflow_name: 'AAPS CI'
-      keep_runs: 20
-      keep_threshold: 5
+          
